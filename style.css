@@ -9,6 +9,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    align-items: center; /* Centrar contenido horizontalmente */
 }
 
 /* Encabezado centrado con sombra */
@@ -42,23 +43,7 @@ h1 {
     border: 2px dashed #9BCFF0; /* Bordes en azul claro pastel */
 }
 
-/* Botones */
-button, .btn {
-    background-color: #9BCFF0; /* Azul claro pastel */
-    color: #2B2D42;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 10px;
-}
-
-button:hover, .btn:hover {
-    background-color: #C3A1E0; /* Lavanda pastel */
-}
-
-/* Inputs */
+/* Inputs y botones en el cuerpo */
 input[type="file"],
 input[type="text"] {
     background-color: #3E4050;
@@ -74,19 +59,37 @@ input[type="text"]::placeholder {
     color: #A8DADC; /* Texto de placeholder en azul pastel */
 }
 
-input:focus {
-    outline: none;
-    border-color: #FFB6C1; /* Rosa pastel al enfocar */
+button, .btn {
+    background-color: #9BCFF0; /* Azul claro pastel */
+    color: #2B2D42;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+button:hover, .btn:hover {
+    background-color: #C3A1E0; /* Lavanda pastel */
 }
 
 /* Mensaje de estado */
-.status-message {
+#status {
     background-color: #3E4050;
     color: #A8DADC;
     padding: 20px;
     border-radius: 15px;
     margin: 20px;
     text-align: center;
+}
+
+/* Estilo del video */
+#videoPlayer {
+    width: 100%;
+    max-width: 600px; /* Ajustar el tamaño máximo del video */
+    border-radius: 15px;
+    margin-top: 20px;
 }
 
 /* Pie de página */
