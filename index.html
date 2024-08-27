@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebTorrent Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
+</head>
+<body>
+    <h1>WebTorrent Client</h1>
+    <input type="file" id="fileInput">
+    <button onclick="shareFile()">Compartir archivo</button>
+    <br><br>
+    <input type="text" id="torrentId" placeholder="Magnet link o archivo .torrent">
+    <button onclick="downloadTorrent()">Descargar</button>
+    <br><br>
+    <video id="videoPlayer" controls></video>
+    <div id="status"></div>
+
+    <script>
+        const client = new WebTorrent();
+
+        // Compartir archivo
+        function shareFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (file) {
+                client.seed(file, (torrent) => {
+                    const magnetURI = torrent.magnetURI;
+                    document.getElementById('status').innerHTML = 'Archivo compartido: <a href="' + magnetURI + '">' + magnetURI + '</a>';
+                    console.log('Magnet URI:', magnetURI);
+                });
+            } else {
+                alert('Por favor, selecciona un archivo.');
+            }
+        }
+
+        // Descargar torrent
+        function downloadTorrent() {
+            const torrentId = document.getElementById('torrentId').value;
+
+            if (torrentId) {
+                client.add(torrentId, (torrent) => {
+                    torrent.files.forEach((file) => {
+                        if (file.name.endsWith('.mp4') || file.name.endsWith('.webm')) {
+                            file.renderTo('video#videoPlayer');
+                        } else {
+                            file.getBlobURL((err, url) => {
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = file.name;
+                                a.textContent = 'Descargar ' + file.name;
+                                document.body.appendChild(a);
+                                document.body.appendChild(document.createElement('br'));
+                            });
+                        }
+                    });
+                });
+            } else {
+                alert('Por favor, introduce un enlace Magnet o un archivo .torrent.');
+            }
+        }
+    </script>
+</body>
+</html>
