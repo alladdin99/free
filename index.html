@@ -18,7 +18,11 @@
     <div id="status"></div>
 
     <script>
-        const client = new WebTorrent();
+        // Configuración del cliente WebTorrent con DHT habilitado
+        const client = new WebTorrent({
+            dht: true,   // Habilitar DHT para descentralización
+            tracker: true // Habilitar el uso de trackers
+        });
 
         // Compartir archivo
         function shareFile() {
@@ -30,6 +34,9 @@
                     const magnetURI = torrent.magnetURI;
                     document.getElementById('status').innerHTML = 'Archivo compartido: <a href="' + magnetURI + '">' + magnetURI + '</a>';
                     console.log('Magnet URI:', magnetURI);
+                }).on('error', (err) => {
+                    console.error('Error al compartir archivo:', err);
+                    document.getElementById('status').innerHTML = 'Error al compartir archivo. Revisa la consola para más detalles.';
                 });
             } else {
                 alert('Por favor, selecciona un archivo.');
@@ -47,15 +54,23 @@
                             file.renderTo('video#videoPlayer');
                         } else {
                             file.getBlobURL((err, url) => {
-                                const a = document.createElement('a');
-                                a.href = url;
-                                a.download = file.name;
-                                a.textContent = 'Descargar ' + file.name;
-                                document.body.appendChild(a);
-                                document.body.appendChild(document.createElement('br'));
+                                if (err) {
+                                    console.error('Error al obtener URL del blob:', err);
+                                    document.getElementById('status').innerHTML = 'Error al obtener URL del blob. Revisa la consola para más detalles.';
+                                } else {
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = file.name;
+                                    a.textContent = 'Descargar ' + file.name;
+                                    document.body.appendChild(a);
+                                    document.body.appendChild(document.createElement('br'));
+                                }
                             });
                         }
                     });
+                }).on('error', (err) => {
+                    console.error('Error al descargar torrent:', err);
+                    document.getElementById('status').innerHTML = 'Error al descargar torrent. Revisa la consola para más detalles.';
                 });
             } else {
                 alert('Por favor, introduce un enlace Magnet o un archivo .torrent.');
