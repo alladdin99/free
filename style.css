@@ -1,0 +1,99 @@
+/* Estilos generales */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #2B2D42;
+    color: #F8F8F8;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Encabezado centrado con sombra */
+h1 {
+    text-align: center;
+    color: #FFB6C1; /* Rosa pastel */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Sombra */
+    margin-top: 20px;
+}
+
+/* Contenedor principal dividido en dos secciones */
+.main-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-grow: 1;
+    padding: 20px;
+}
+
+/* Secciones de subida y descarga */
+.section {
+    background-color: #3E4050;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 10px;
+    flex-basis: 48%; /* Cada sección ocupa el 48% del espacio horizontal */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 2px dashed #9BCFF0; /* Bordes en azul claro pastel */
+}
+
+/* Botones */
+button, .btn {
+    background-color: #9BCFF0; /* Azul claro pastel */
+    color: #2B2D42;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+button:hover, .btn:hover {
+    background-color: #C3A1E0; /* Lavanda pastel */
+}
+
+/* Inputs */
+input[type="file"],
+input[type="text"] {
+    background-color: #3E4050;
+    border: 1px solid #9BCFF0; /* Azul claro pastel */
+    color: #F8F8F8;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+input[type="text"]::placeholder {
+    color: #A8DADC; /* Texto de placeholder en azul pastel */
+}
+
+input:focus {
+    outline: none;
+    border-color: #FFB6C1; /* Rosa pastel al enfocar */
+}
+
+/* Mensaje de estado */
+.status-message {
+    background-color: #3E4050;
+    color: #A8DADC;
+    padding: 20px;
+    border-radius: 15px;
+    margin: 20px;
+    text-align: center;
+}
+
+/* Pie de página */
+footer {
+    background-color: #3E4050;
+    color: #A8DADC;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #9BCFF0; /* Azul claro pastel */
+}
