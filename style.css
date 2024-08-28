@@ -58,6 +58,7 @@ button:hover, .btn:hover {
     background-color: #C3A1E0; /* Lavanda pastel */
 }
 
+
 /* Inputs */
 input[type="file"],
 input[type="text"] {
@@ -139,4 +140,35 @@ a:hover {
 
 .copy-button:hover {
     background-color: #C3A1E0; /* Lavanda pastel */
+}
+
+/* Estilo del input de archivo (oculto) */
+.file-input {
+    display: none; /* Ocultar el input original */
+}
+
+/* Estilo del label como botón */
+.file-label {
+    display: inline-block;
+    background-color: #9BCFF0; /* Azul claro pastel */
+    color: #2B2D42;
+    border: 2px solid #9BCFF0; /* Bordes en azul claro pastel */
+    border-radius: 25px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.file-label:hover {
+    background-color: #C3A1E0; /* Lavanda pastel */
+    border-color: #C3A1E0;
+}
+
+/* Estilo opcional para añadir un ícono más atractivo */
+.file-label::before {
+    content: '📂'; /* Icono opcional */
+    margin-right: 8px;
 }
