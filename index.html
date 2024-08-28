@@ -30,7 +30,7 @@
     <!--<video id="videoPlayer" controls></video>-->
     <div class="status-container">
     <div id="status"></div>
-    <button class="copy-button" onclick="copyToClipboard()">🔗 Copiar enlace</button>
+    <button class="copy-button" onclick="copyToClipboard()" style="display:none;">🔗 Copiar enlace</button>
     </div>
 
     <script>
@@ -50,6 +50,7 @@
                     const magnetURI = torrent.magnetURI;
                     document.getElementById('status').innerHTML = 'Archivo compartido: <a href="' + magnetURI + '">' + magnetURI + '</a>';
                     console.log('Magnet URI:', magnetURI);
+                    document.getElementById('copyButton').style.display = 'inline-block'; // Mostrar el botón
                 }).on('error', (err) => {
                     console.error('Error al compartir archivo:', err);
                     document.getElementById('status').innerHTML = 'Error al compartir archivo. Revisa la consola para más detalles.';
