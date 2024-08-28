@@ -29,7 +29,7 @@
         
         <!-- Sección de Descarga -->
         <div class="section download">
-            <input type="text" id="torrentId" placeholder="Magnet link o archivo .torrent">
+            <input type="text" id="torrentId" placeholder="Pegar el enlace magnético.">
             <button onclick="downloadTorrent()">📥 Descargar</button>
         </div>
     </div>
@@ -52,120 +52,125 @@
 
 
 
-    <script>
-        // Configuración del cliente WebTorrent con DHT habilitado
-        const client = new WebTorrent({
-            dht: true,   // Habilitar DHT para descentralización
-            tracker: true // Habilitar el uso de trackers
-        });
+   <script>
+    // Configuración del cliente WebTorrent con DHT habilitado
+    const client = new WebTorrent({
+        dht: true,   // Habilitar DHT para descentralización
+        tracker: true // Habilitar el uso de trackers
+    });
 
-        // Clave de encriptación (debe ser segura en producción)
-        const encryptionKey = 'P@ssw0rd!2024$SecureKey';
+    // Clave de encriptación (debe ser segura en producción)
+    const encryptionKey = 'P@ssw0rd!2024$SecureKey';
 
-        // Función para encriptar un texto
-        function encrypt(text, key) {
-            return CryptoJS.AES.encrypt(text, key).toString();
+    // Función para encriptar un texto
+    function encrypt(text, key) {
+        return CryptoJS.AES.encrypt(text, key).toString();
+    }
+
+    // Función para desencriptar un texto
+    function decrypt(text, key) {
+        const bytes = CryptoJS.AES.decrypt(text, key);
+        return bytes.toString(CryptoJS.enc.Utf8);
+    }
+
+    // Compartir archivo
+    function shareFile() {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+
+        if (file) {
+            client.seed(file, (torrent) => {
+                const magnetURI = torrent.magnetURI;
+
+                // Encriptar el enlace magnético
+                const encryptedMagnetURI = encrypt(magnetURI, encryptionKey);
+
+                // Mostrar el enlace acortado (en realidad, solo se muestra el enlace encriptado)
+                document.getElementById('status').innerHTML = 'Archivo compartido: <a href="#" onclick="return false;">' + encryptedMagnetURI + '</a>';
+                console.log('Magnet URI encriptado:', encryptedMagnetURI);
+                document.getElementById('copyButton').style.display = 'inline-block'; // Mostrar el botón
+            }).on('error', (err) => {
+                console.error('Error al compartir archivo:', err);
+                document.getElementById('status').innerHTML = 'Error al compartir archivo. Revisa la consola para más detalles.';
+            });
+        } else {
+            alert('Por favor, selecciona un archivo.');
         }
+    }
 
-        // Función para desencriptar un texto
-        function decrypt(text, key) {
-            const bytes = CryptoJS.AES.decrypt(text, key);
-            return bytes.toString(CryptoJS.enc.Utf8);
-        }
+    // Descargar torrent
+    function downloadTorrent() {
+        const torrentId = document.getElementById('torrentId').value;
 
-        // Compartir archivo
-        function shareFile() {
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
+        if (torrentId) {
+            try {
+                // Desencriptar el enlace magnético
+                const decryptedMagnetURI = decrypt(torrentId, encryptionKey);
 
-            if (file) {
-                client.seed(file, (torrent) => {
-                    const magnetURI = torrent.magnetURI;
+                client.add(decryptedMagnetURI, (torrent) => {
+                    // Limpiar contenido previo
+                    const downloadSection = document.querySelector('.section.download');
+                    downloadSection.innerHTML = '';
 
-                    // Encriptar el enlace magnético
-                    const encryptedMagnetURI = encrypt(magnetURI, encryptionKey);
-
-                    // Mostrar el enlace acortado (en realidad, solo se muestra el enlace encriptado)
-                    document.getElementById('status').innerHTML = 'Archivo compartido: <a href="#" onclick="return false;">' + encryptedMagnetURI + '</a>';
-                    console.log('Magnet URI encriptado:', encryptedMagnetURI);
-                    document.getElementById('copyButton').style.display = 'inline-block'; // Mostrar el botón
-                }).on('error', (err) => {
-                    console.error('Error al compartir archivo:', err);
-                    document.getElementById('status').innerHTML = 'Error al compartir archivo. Revisa la consola para más detalles.';
-                });
-            } else {
-                alert('Por favor, selecciona un archivo.');
-            }
-        }
-
-        // Descargar torrent
-        function downloadTorrent() {
-            const torrentId = document.getElementById('torrentId').value;
-
-            if (torrentId) {
-                try {
-                    // Desencriptar el enlace magnético
-                    const decryptedMagnetURI = decrypt(torrentId, encryptionKey);
-
-                    client.add(decryptedMagnetURI, (torrent) => {
-                        torrent.files.forEach((file) => {
-                            if (file.name.endsWith('.mp4') || file.name.endsWith('.webm')) {
-                                file.renderTo('video#videoPlayer');
-                            } else {
-                                file.getBlobURL((err, url) => {
-                                    if (err) {
-                                        console.error('Error al obtener URL del blob:', err);
-                                        document.getElementById('status').innerHTML = 'Error al obtener URL del blob. Revisa la consola para más detalles.';
-                                    } else {
-                                        const a = document.createElement('a');
-                                        a.href = url;
-                                        a.download = file.name;
-                                        a.textContent = 'Descargar ' + file.name;
-                                        document.body.appendChild(a);
-                                        document.body.appendChild(document.createElement('br'));
-                                    }
-                                });
-                            }
-                        });
-                    }).on('error', (err) => {
-                        console.error('Error al descargar torrent:', err);
-                        document.getElementById('status').innerHTML = 'Error al descargar torrent. Revisa la consola para más detalles.';
+                    torrent.files.forEach((file) => {
+                        if (file.name.endsWith('.mp4') || file.name.endsWith('.webm')) {
+                            file.renderTo('video#videoPlayer');
+                        } else {
+                            file.getBlobURL((err, url) => {
+                                if (err) {
+                                    console.error('Error al obtener URL del blob:', err);
+                                    document.getElementById('status').innerHTML = 'Error al obtener URL del blob. Revisa la consola para más detalles.';
+                                } else {
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = file.name;
+                                    a.textContent = 'Descargar ' + file.name;
+                                    downloadSection.appendChild(a);
+                                    downloadSection.appendChild(document.createElement('br'));
+                                }
+                            });
+                        }
                     });
-                } catch (err) {
-                    console.error('Error al desencriptar el enlace:', err);
-                    alert('El enlace es inválido o no se pudo desencriptar.');
-                }
-            } else {
-                alert('Por favor, introduce un enlace Magnet o un archivo .torrent.');
-            }
-        }
-
-        function copyToClipboard() {
-            const statusElement = document.getElementById('status');
-            const link = statusElement.querySelector('a');
-            if (link) {
-                navigator.clipboard.writeText(link.textContent).then(() => {
-                    alert('Enlace copiado al portapapeles');
-                }).catch(err => {
-                    console.error('Error al copiar enlace: ', err);
+                }).on('error', (err) => {
+                    console.error('Error al descargar torrent:', err);
+                    document.getElementById('status').innerHTML = 'Error al descargar torrent. Revisa la consola para más detalles.';
                 });
-            } else {
-                alert('No hay ningún enlace para copiar.');
+            } catch (err) {
+                console.error('Error al desencriptar el enlace:', err);
+                alert('El enlace es inválido o no se pudo desencriptar.');
             }
+        } else {
+            alert('Por favor, introduce un enlace Magnet o un archivo .torrent.');
         }
+    }
 
-        function updateFileName() {
-            const fileInput = document.getElementById('fileInput');
-            const fileNameElement = document.getElementById('fileName');
-            
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                fileNameElement.textContent = `Archivo seleccionado: ${file.name}`;
-            } else {
-                fileNameElement.textContent = '';
-            }
+    function copyToClipboard() {
+        const statusElement = document.getElementById('status');
+        const link = statusElement.querySelector('a');
+        if (link) {
+            navigator.clipboard.writeText(link.textContent).then(() => {
+                alert('Enlace copiado al portapapeles');
+            }).catch(err => {
+                console.error('Error al copiar enlace: ', err);
+            });
+        } else {
+            alert('No hay ningún enlace para copiar.');
         }
-    </script>
+    }
+
+    function updateFileName() {
+        const fileInput = document.getElementById('fileInput');
+        const fileNameElement = document.getElementById('fileName');
+        
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            fileNameElement.textContent = `Archivo seleccionado: ${file.name}`;
+        } else {
+            fileNameElement.textContent = '';
+        }
+    }
+</script>
+
 
     <br><br>
 
