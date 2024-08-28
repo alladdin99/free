@@ -1,4 +1,4 @@
-/* Estilos generales */
+ /* Estilos generales */
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #2B2D42;
@@ -9,7 +9,6 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    align-items: center; /* Centrar contenido horizontalmente */
 }
 
 /* Encabezado centrado con sombra */
@@ -43,22 +42,7 @@ h1 {
     border: 2px dashed #9BCFF0; /* Bordes en azul claro pastel */
 }
 
-/* Inputs y botones en el cuerpo */
-input[type="file"],
-input[type="text"] {
-    background-color: #3E4050;
-    border: 1px solid #9BCFF0; /* Azul claro pastel */
-    color: #F8F8F8;
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    width: 100%;
-}
-
-input[type="text"]::placeholder {
-    color: #A8DADC; /* Texto de placeholder en azul pastel */
-}
-
+/* Botones */
 button, .btn {
     background-color: #9BCFF0; /* Azul claro pastel */
     color: #2B2D42;
@@ -74,22 +58,35 @@ button:hover, .btn:hover {
     background-color: #C3A1E0; /* Lavanda pastel */
 }
 
+/* Inputs */
+input[type="file"],
+input[type="text"] {
+    background-color: #3E4050;
+    border: 1px solid #9BCFF0; /* Azul claro pastel */
+    color: #F8F8F8;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+input[type="text"]::placeholder {
+    color: #A8DADC; /* Texto de placeholder en azul pastel */
+}
+
+input:focus {
+    outline: none;
+    border-color: #FFB6C1; /* Rosa pastel al enfocar */
+}
+
 /* Mensaje de estado */
-#status {
+.status-message {
     background-color: #3E4050;
     color: #A8DADC;
     padding: 20px;
     border-radius: 15px;
     margin: 20px;
     text-align: center;
-}
-
-/* Estilo del video */
-#videoPlayer {
-    width: 100%;
-    max-width: 600px; /* Ajustar el tamaño máximo del video */
-    border-radius: 15px;
-    margin-top: 20px;
 }
 
 /* Pie de página */
@@ -99,81 +96,4 @@ footer {
     padding: 20px;
     text-align: center;
     border-top: 1px solid #9BCFF0; /* Azul claro pastel */
-}
-
-
-/* Contenedor de los botones y campos de entrada */
-.buttons-container {
-    display: flex;
-    justify-content: space-between; /* Distribuye los elementos a los extremos */
-    width: 100%; /* Asegura que ocupe todo el ancho disponible */
-    padding: 20px; /* Añade un poco de espacio alrededor */
-}
-
-/* Estilo para el conjunto de botones y entradas */
-.file-share, .torrent-download {
-    display: flex;
-    align-items: center;
-}
-
-.file-share {
-    justify-content: flex-start; /* Alinea a la izquierda */
-}
-
-.torrent-download {
-    justify-content: flex-end; /* Alinea a la derecha */
-}
-
-input[type="file"], input[type="text"] {
-    margin-right: 10px; /* Añade un margen entre el input y el botón */
-}
-
-
-/* Contenedor principal */
-.container {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-    margin: 20px;
-}
-
-/* Sección izquierda y derecha */
-.left-section, .right-section {
-    background-color: #3E4050;
-    color: #F8F8F8;
-    padding: 20px;
-    border-radius: 15px;
-    width: 45%; /* Ancho de cada sección */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Efecto hover */
-.left-section:hover, .right-section:hover {
-    transform: translateY(-10px); /* Desplazamiento hacia arriba */
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Aumentar la sombra */
-}
-
-/* Encabezados de las secciones */
-h2 {
-    color: #FFB6C1; /* Rosa pastel */
-    margin-bottom: 10px;
-}
-
-/* Contenido de las secciones */
-p {
-    margin: 0;
-}
-
-/* Ajustes responsivos */
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .left-section, .right-section {
-        width: 100%;
-        margin-bottom: 20px;
-    }
 }
