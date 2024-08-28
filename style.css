@@ -222,3 +222,11 @@ a:hover {
     font-size: 1em; /* Tamaño del texto */
 }
 
+
+/* Estilo del logo */
+.logo {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 20px auto; /* Centra la imagen */
+}
