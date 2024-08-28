@@ -6,38 +6,19 @@
     <title>AllAddIn99</title>
     <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
      <link rel="stylesheet" href="style.css">
-     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        #status {
-            margin-top: 20px;
-        }
-        a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        #videoPlayer {
-            width: 100%;
-            max-width: 600px;
-            margin-top: 20px;
-        }
-    </style>
+     
 </head>
 <body>
     <h1>AllAddIn99</h1>
     
-<div class="buttons-container">
-    <div class="left-section">
+ <div class="main-container">
+        <!-- Sección de Subida -->
+        <div class="section upload">
     <input type="file" id="fileInput">
     <button onclick="shareFile()">Compartir archivo</button>
 
 </div>
-    <div class="right-section">
+   <div class="section download">
 
 
     <input type="text" id="torrentId" placeholder="Magnet link o archivo .torrent">
