@@ -230,3 +230,25 @@ a:hover {
     height: auto;
     margin: 20px auto; /* Centra la imagen */
 }
+
+.translation-buttons {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000; /* Asegura que el contenedor esté encima de otros elementos */
+}
+
+.translation-buttons button {
+    background-color: #007bff; /* Botón de color azul */
+    color: white;
+    border: none;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.translation-buttons button:hover {
+    background-color: #0056b3; /* Botón de color azul más oscuro al pasar el mouse */
+}
+

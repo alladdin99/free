@@ -9,20 +9,19 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <div class="translation-buttons">
-        <button onclick="translateTo('en')">EN</button>
-        <button onclick="translateTo('es')">ES</button>
-    </div>
     
     <img src="logo.png" alt="Logo de AllAddIn99" class="logo">
 
-    
+    <div class="translation-buttons">
+    <button onclick="translateTo('en')">Traducir al Inglés</button>
+    <button onclick="translateTo('es')">Traducir al Castellano</button>
+</div>
 
-    <div class="description-container">
-        <p id="description1" class="description">FAST LINKER es una plataforma rápida y segura para compartir archivos de un lugar a otro en cuestión de segundos.</p>
-        <p id="description2" class="description">Comparte tus archivos sin complicaciones, utilizando tecnología descentralizada para garantizar la eficiencia y privacidad.</p>
-    </div>
+       <div class="description-container">
+        <p class="description">FAST LINKER es una plataforma rápida y segura para compartir archivos de un lugar a otro en cuestión de segundos.</p>
+
+    <p class="description">Comparte tus archivos sin complicaciones, utilizando tecnología descentralizada para garantizar la eficiencia y privacidad.</p>
+        </div>
     
     <div class="main-container">
         <!-- Sección de Subida -->
@@ -44,174 +43,177 @@
     <!--<video id="videoPlayer" controls></video>-->
     <div class="status-container">
         <div id="status"></div>
-        <button class="copy-button" id="copyButton" onclick="copyToClipboard()">🔗 Copiar enlace</button>
+        <button class="copy-button" onclick="copyToClipboard()">🔗 Copiar enlace</button>
     </div>
 
-    <!-- Contenedor de Explicación -->
+     <!-- Contenedor de Explicación -->
     <div class="instructions-container">
-        <h2 id="instructionsHeading">Explicación de uso:</h2>
-        <p id="uploadInstruction"><strong>Subir archivo:</strong> Selecciona el archivo que deseas compartir haciendo clic en "Examinar" y luego en "Compartir archivo". Esto generará un enlace encriptado que podrás copiar.</p>
-        <p id="shareInstruction"><strong>Compartir enlace:</strong> Copia el enlace generado y compártelo con la persona que deseas enviarle el archivo.</p>
-        <p id="downloadInstruction"><strong>Descargar archivo:</strong> La persona que recibe el enlace solo necesita pegarlo en el campo de descarga y hacer clic en "Descargar". El sistema desencriptará automáticamente el enlace y comenzará la descarga del archivo.</p>
-        <p id="simpleText">¡Así de sencillo!</p>
+        <h2>Explicación de uso:</h2>
+        <p><strong>Subir archivo:</strong> Selecciona el archivo que deseas compartir haciendo clic en "Examinar" y luego en "Compartir archivo". Esto generará un enlace encriptado que podrás copiar.</p>
+        <p><strong>Compartir enlace:</strong> Copia el enlace generado y compártelo con la persona que deseas enviarle el archivo.</p>
+        <p><strong>Descargar archivo:</strong> La persona que recibe el enlace solo necesita pegarlo en el campo de descarga y hacer clic en "Descargar". El sistema desencriptará automáticamente el enlace y comenzará la descarga del archivo.</p>
+        <p>¡Así de sencillo!</p>
     </div>
 
-    <script>
-        // Configuración del cliente WebTorrent con DHT habilitado
-        const client = new WebTorrent({
-            dht: true,   // Habilitar DHT para descentralización
-            tracker: true // Habilitar el uso de trackers
-        });
 
-        // Clave de encriptación (debe ser segura en producción)
-        const encryptionKey = 'P@ssw0rd!2024$SecureKey';
 
-        // Función para encriptar un texto
-        function encrypt(text, key) {
-            return CryptoJS.AES.encrypt(text, key).toString();
+   <script>
+    // Configuración del cliente WebTorrent con DHT habilitado
+    const client = new WebTorrent({
+        dht: true,   // Habilitar DHT para descentralización
+        tracker: true // Habilitar el uso de trackers
+    });
+
+    // Clave de encriptación (debe ser segura en producción)
+    const encryptionKey = 'P@ssw0rd!2024$SecureKey';
+
+    // Función para encriptar un texto
+    function encrypt(text, key) {
+        return CryptoJS.AES.encrypt(text, key).toString();
+    }
+
+    // Función para desencriptar un texto
+    function decrypt(text, key) {
+        const bytes = CryptoJS.AES.decrypt(text, key);
+        return bytes.toString(CryptoJS.enc.Utf8);
+    }
+
+    // Compartir archivo
+    function shareFile() {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+
+        if (file) {
+            client.seed(file, (torrent) => {
+                const magnetURI = torrent.magnetURI;
+
+                // Encriptar el enlace magnético
+                const encryptedMagnetURI = encrypt(magnetURI, encryptionKey);
+
+                // Mostrar el enlace acortado (en realidad, solo se muestra el enlace encriptado)
+                document.getElementById('status').innerHTML = 'Archivo compartido: <a href="#" onclick="return false;">' + encryptedMagnetURI + '</a>';
+                console.log('Magnet URI encriptado:', encryptedMagnetURI);
+                document.getElementById('copyButton').style.display = 'inline-block'; // Mostrar el botón
+            }).on('error', (err) => {
+                console.error('Error al compartir archivo:', err);
+                document.getElementById('status').innerHTML = 'Error al compartir archivo. Revisa la consola para más detalles.';
+            });
+        } else {
+            alert('Por favor, selecciona un archivo.');
         }
+    }
 
-        // Función para desencriptar un texto
-        function decrypt(text, key) {
-            const bytes = CryptoJS.AES.decrypt(text, key);
-            return bytes.toString(CryptoJS.enc.Utf8);
-        }
+    // Descargar torrent
+    function downloadTorrent() {
+        const torrentId = document.getElementById('torrentId').value;
 
-        // Compartir archivo
-        function shareFile() {
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
+        if (torrentId) {
+            try {
+                // Desencriptar el enlace magnético
+                const decryptedMagnetURI = decrypt(torrentId, encryptionKey);
 
-            if (file) {
-                client.seed(file, (torrent) => {
-                    const magnetURI = torrent.magnetURI;
+                client.add(decryptedMagnetURI, (torrent) => {
+                    // Limpiar contenido previo
+                    const downloadSection = document.querySelector('.section.download');
+                    downloadSection.innerHTML = '';
 
-                    // Encriptar el enlace magnético
-                    const encryptedMagnetURI = encrypt(magnetURI, encryptionKey);
-
-                    // Mostrar el enlace acortado (en realidad, solo se muestra el enlace encriptado)
-                    document.getElementById('status').innerHTML = 'Archivo compartido: <a href="#" onclick="return false;">' + encryptedMagnetURI + '</a>';
-                    console.log('Magnet URI encriptado:', encryptedMagnetURI);
-                    document.getElementById('copyButton').style.display = 'inline-block'; // Mostrar el botón
-                }).on('error', (err) => {
-                    console.error('Error al compartir archivo:', err);
-                    document.getElementById('status').innerHTML = 'Error al compartir archivo. Revisa la consola para más detalles.';
-                });
-            } else {
-                alert('Por favor, selecciona un archivo.');
-            }
-        }
-
-        // Descargar torrent
-        function downloadTorrent() {
-            const torrentId = document.getElementById('torrentId').value;
-
-            if (torrentId) {
-                try {
-                    // Desencriptar el enlace magnético
-                    const decryptedMagnetURI = decrypt(torrentId, encryptionKey);
-
-                    client.add(decryptedMagnetURI, (torrent) => {
-                        // Limpiar contenido previo
-                        const downloadSection = document.querySelector('.section.download');
-                        downloadSection.innerHTML = '';
-
-                        torrent.files.forEach((file) => {
-                            if (file.name.endsWith('.mp4') || file.name.endsWith('.webm')) {
-                                file.renderTo('video#videoPlayer');
-                            } else {
-                                file.getBlobURL((err, url) => {
-                                    if (err) {
-                                        console.error('Error al obtener URL del blob:', err);
-                                        document.getElementById('status').innerHTML = 'Error al obtener URL del blob. Revisa la consola para más detalles.';
-                                    } else {
-                                        const a = document.createElement('a');
-                                        a.href = url;
-                                        a.download = file.name;
-                                        a.textContent = 'Descargar ' + file.name;
-                                        downloadSection.appendChild(a);
-                                        downloadSection.appendChild(document.createElement('br'));
-                                    }
-                                });
-                            }
-                        });
-                    }).on('error', (err) => {
-                        console.error('Error al descargar torrent:', err);
-                        document.getElementById('status').innerHTML = 'Error al descargar torrent. Revisa la consola para más detalles.';
+                    torrent.files.forEach((file) => {
+                        if (file.name.endsWith('.mp4') || file.name.endsWith('.webm')) {
+                            file.renderTo('video#videoPlayer');
+                        } else {
+                            file.getBlobURL((err, url) => {
+                                if (err) {
+                                    console.error('Error al obtener URL del blob:', err);
+                                    document.getElementById('status').innerHTML = 'Error al obtener URL del blob. Revisa la consola para más detalles.';
+                                } else {
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = file.name;
+                                    a.textContent = 'Descargar ' + file.name;
+                                    downloadSection.appendChild(a);
+                                    downloadSection.appendChild(document.createElement('br'));
+                                }
+                            });
+                        }
                     });
-                } catch (err) {
-                    console.error('Error al desencriptar el enlace:', err);
-                    alert('El enlace es inválido o no se pudo desencriptar.');
-                }
-            } else {
-                alert('Por favor, introduce un enlace Magnet o un archivo .torrent.');
-            }
-        }
-
-        function copyToClipboard() {
-            const statusElement = document.getElementById('status');
-            const link = statusElement.querySelector('a');
-            if (link) {
-                navigator.clipboard.writeText(link.textContent).then(() => {
-                    alert('Enlace copiado al portapapeles');
-                }).catch(err => {
-                    console.error('Error al copiar enlace: ', err);
+                }).on('error', (err) => {
+                    console.error('Error al descargar torrent:', err);
+                    document.getElementById('status').innerHTML = 'Error al descargar torrent. Revisa la consola para más detalles.';
                 });
-            } else {
-                alert('No hay ningún enlace para copiar.');
+            } catch (err) {
+                console.error('Error al desencriptar el enlace:', err);
+                alert('El enlace es inválido o no se pudo desencriptar.');
+            }
+        } else {
+            alert('Por favor, introduce un enlace Magnet o un archivo .torrent.');
+        }
+    }
+
+    function copyToClipboard() {
+        const statusElement = document.getElementById('status');
+        const link = statusElement.querySelector('a');
+        if (link) {
+            navigator.clipboard.writeText(link.textContent).then(() => {
+                alert('Enlace copiado al portapapeles');
+            }).catch(err => {
+                console.error('Error al copiar enlace: ', err);
+            });
+        } else {
+            alert('No hay ningún enlace para copiar.');
+        }
+    }
+
+    function updateFileName() {
+        const fileInput = document.getElementById('fileInput');
+        const fileNameElement = document.getElementById('fileName');
+        
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            fileNameElement.textContent = `Archivo seleccionado: ${file.name}`;
+        } else {
+            fileNameElement.textContent = '';
+        }
+    }
+</script>
+
+<script>
+    // Objeto de traducción simulado
+    const translations = {
+        en: {
+            description1: "FAST LINKER is a fast and secure platform for sharing files from one place to another in seconds.",
+            description2: "Share your files hassle-free, using decentralized technology to ensure efficiency and privacy.",
+            instructions: {
+                upload: "Upload file: Select the file you want to share by clicking 'Browse' and then 'Share file'. This will generate an encrypted link that you can copy.",
+                share: "Share link: Copy the generated link and share it with the person you want to send the file to.",
+                download: "Download file: The person receiving the link just needs to paste it into the download field and click 'Download'. The system will automatically decrypt the link and start the file download.",
+            }
+        },
+        es: {
+            description1: "FAST LINKER es una plataforma rápida y segura para compartir archivos de un lugar a otro en cuestión de segundos.",
+            description2: "Comparte tus archivos sin complicaciones, utilizando tecnología descentralizada para garantizar la eficiencia y privacidad.",
+            instructions: {
+                upload: "Subir archivo: Selecciona el archivo que deseas compartir haciendo clic en 'Examinar' y luego en 'Compartir archivo'. Esto generará un enlace encriptado que podrás copiar.",
+                share: "Compartir enlace: Copia el enlace generado y compártelo con la persona que deseas enviarle el archivo.",
+                download: "Descargar archivo: La persona que recibe el enlace solo necesita pegarlo en el campo de descarga y hacer clic en 'Descargar'. El sistema desencriptará automáticamente el enlace y comenzará la descarga del archivo.",
             }
         }
+    };
 
-        function updateFileName() {
-            const fileInput = document.getElementById('fileInput');
-            const fileNameElement = document.getElementById('fileName');
-            
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                fileNameElement.textContent = `Archivo seleccionado: ${file.name}`;
-            } else {
-                fileNameElement.textContent = '';
-            }
-        }
+    function translateTo(language) {
+        const description1 = document.querySelector('.description-container p:nth-of-type(1)');
+        const description2 = document.querySelector('.description-container p:nth-of-type(2)');
+        const uploadInstruction = document.querySelector('.instructions-container p:nth-of-type(1)');
+        const shareInstruction = document.querySelector('.instructions-container p:nth-of-type(2)');
+        const downloadInstruction = document.querySelector('.instructions-container p:nth-of-type(3)');
 
-        // Objeto de traducción simulado
-        const translations = {
-            en: {
-                description1: "FAST LINKER is a fast and secure platform for sharing files from one place to another in seconds.",
-                description2: "Share your files hassle-free, using decentralized technology to ensure efficiency and privacy.",
-                instructions: {
-                    upload: "Upload file: Select the file you want to share by clicking 'Browse' and then 'Share file'. This will generate an encrypted link that you can copy.",
-                    share: "Share link: Copy the generated link and share it with the person you want to send the file to.",
-                    download: "Download file: The person receiving the link just needs to paste it into the download field and click 'Download'. The system will automatically decrypt the link and start the file download.",
-                }
-            },
-            es: {
-                description1: "FAST LINKER es una plataforma rápida y segura para compartir archivos de un lugar a otro en cuestión de segundos.",
-                description2: "Comparte tus archivos sin complicaciones, utilizando tecnología descentralizada para garantizar la eficiencia y privacidad.",
-                instructions: {
-                    upload: "Subir archivo: Selecciona el archivo que deseas compartir haciendo clic en 'Examinar' y luego en 'Compartir archivo'. Esto generará un enlace encriptado que podrás copiar.",
-                    share: "Compartir enlace: Copia el enlace generado y compártelo con la persona que deseas enviarle el archivo.",
-                    download: "Descargar archivo: La persona que recibe el enlace solo necesita pegarlo en el campo de descarga y hacer clic en 'Descargar'. El sistema desencriptará automáticamente el enlace y comenzará la descarga del archivo.",
-                }
-            }
-        };
+        description1.textContent = translations[language].description1;
+        description2.textContent = translations[language].description2;
+        uploadInstruction.innerHTML = `<strong>Subir archivo:</strong> ${translations[language].instructions.upload}`;
+        shareInstruction.innerHTML = `<strong>Compartir enlace:</strong> ${translations[language].instructions.share}`;
+        downloadInstruction.innerHTML = `<strong>Descargar archivo:</strong> ${translations[language].instructions.download}`;
+    }
+</script>
 
-        function translateTo(language) {
-            const description1 = document.getElementById('description1');
-            const description2 = document.getElementById('description2');
-            const uploadInstruction = document.getElementById('uploadInstruction');
-            const shareInstruction = document.getElementById('shareInstruction');
-            const downloadInstruction = document.getElementById('downloadInstruction');
-            const simpleText = document.getElementById('simpleText');
-
-            description1.textContent = translations[language].description1;
-            description2.textContent = translations[language].description2;
-            uploadInstruction.innerHTML = `<strong>Subir archivo:</strong> ${translations[language].instructions.upload}`;
-            shareInstruction.innerHTML = `<strong>Compartir enlace:</strong> ${translations[language].instructions.share}`;
-            downloadInstruction.innerHTML = `<strong>Descargar archivo:</strong> ${translations[language].instructions.download}`;
-            simpleText.textContent = '¡Así de sencillo!';
-        }
-    </script>
 
     <br><br>
 
