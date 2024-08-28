@@ -13,11 +13,11 @@
     
  <div class="main-container">
         <!-- Sección de Subida -->
-        <div class="section upload">    
-    <input type="file" id="fileInput" class="file-input">
+       <div class="section upload">
+    <input type="file" id="fileInput" class="file-input" onchange="updateFileName()">
     <label for="fileInput" class="file-label">Examinar</label>
     <button onclick="shareFile()">📤 Compartir archivo</button>
-
+    <p id="fileName" class="file-name"></p> <!-- Elemento para mostrar el nombre del archivo -->
 </div>
    <div class="section download">
 
@@ -108,6 +108,19 @@
         alert('No hay ningún enlace para copiar.');
     }
 }
+
+function updateFileName() {
+    const fileInput = document.getElementById('fileInput');
+    const fileNameElement = document.getElementById('fileName');
+    
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        fileNameElement.textContent = `Archivo seleccionado: ${file.name}`;
+    } else {
+        fileNameElement.textContent = '';
+    }
+}
+
 
     </script>
 

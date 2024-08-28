@@ -172,3 +172,9 @@ a:hover {
     content: '📂'; /* Icono opcional */
     margin-right: 8px;
 }
+
+/* Estilo del nombre del archivo seleccionado */
+.file-name {
+    color: #F8F8F8;
+    margin-top: 10px;
+}
