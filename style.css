@@ -127,3 +127,53 @@ footer {
 input[type="file"], input[type="text"] {
     margin-right: 10px; /* Añade un margen entre el input y el botón */
 }
+
+
+/* Contenedor principal */
+.container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    margin: 20px;
+}
+
+/* Sección izquierda y derecha */
+.left-section, .right-section {
+    background-color: #3E4050;
+    color: #F8F8F8;
+    padding: 20px;
+    border-radius: 15px;
+    width: 45%; /* Ancho de cada sección */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Efecto hover */
+.left-section:hover, .right-section:hover {
+    transform: translateY(-10px); /* Desplazamiento hacia arriba */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Aumentar la sombra */
+}
+
+/* Encabezados de las secciones */
+h2 {
+    color: #FFB6C1; /* Rosa pastel */
+    margin-bottom: 10px;
+}
+
+/* Contenido de las secciones */
+p {
+    margin: 0;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .left-section, .right-section {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}
