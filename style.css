@@ -97,3 +97,16 @@ footer {
     text-align: center;
     border-top: 1px solid #9BCFF0; /* Azul claro pastel */
 }
+
+
+/* Estilo de los enlaces */
+a {
+    color: #88C0D0; /* Azul pastel */
+    text-decoration: none;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+a:hover {
+    color: #81A1C1; /* Azul más oscuro al hacer hover */
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3); /* Sombra en el texto del enlace */
+}
