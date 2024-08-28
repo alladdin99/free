@@ -5,15 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AllAddIn99</title>
     <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>AllAddIn99</h1>
+    
+    <div class="horizontal-container">
+    <div class="left-section">
     <input type="file" id="fileInput">
     <button onclick="shareFile()">Compartir archivo</button>
-    <br><br>
+    </div>
+
+    
+     <div class="right-section">
     <input type="text" id="torrentId" placeholder="Magnet link o archivo .torrent">
     <button onclick="downloadTorrent()">Descargar</button>
+    </div>
+    </div>
+
+
     <br><br>
     <video id="videoPlayer" controls></video>
     <div id="status"></div>
