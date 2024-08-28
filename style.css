@@ -178,3 +178,10 @@ a:hover {
     color: #F8F8F8;
     margin-top: 10px;
 }
+
+
+/* Estilo del contenedor de enlaces de descarga */
+.download-links {
+    margin-top: 10px;
+    color: #F8F8F8;
+}

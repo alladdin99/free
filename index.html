@@ -5,127 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AllAddIn99</title>
     <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
-     <link rel="stylesheet" href="style.css">
-
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>📤 AllAddIn99 📥</h1>
-    
- <div class="main-container">
+    <h1>AllAddIn99</h1>
+
+    <div class="main-container">
         <!-- Sección de Subida -->
-       <div class="section upload">
-    <input type="file" id="fileInput" class="file-input" onchange="updateFileName()">
-    <label for="fileInput" class="file-label">Examinar</label>
-    <button onclick="shareFile()">📤 Compartir archivo</button>
-    <p id="fileName" class="file-name"></p> <!-- Elemento para mostrar el nombre del archivo -->
-</div>
-   <div class="section download">
+        <div class="section upload">
+            <input type="file" id="fileInput">
+            <button onclick="shareFile()">Subir archivo</button>
+        </div>
 
-
-    <input type="text" id="torrentId" placeholder="Magnet link o archivo .torrent">
-    <button onclick="downloadTorrent()">📥 Descargar</button>
-</div>
-</div>
-
-    <br><br>
-    <!--<video id="videoPlayer" controls></video>-->
-    <div class="status-container">
-    <div id="status"></div>
-    <button class="copy-button" onclick="copyToClipboard()" >🔗 Copiar enlace</button>
+        <!-- Sección de Descarga -->
+        <div class="section download">
+            <input type="text" id="torrentId" placeholder="Enlace Magnet o archivo .torrent">
+            <button onclick="downloadTorrent()">Descargar</button>
+        </div>
     </div>
 
-    <script>
-        // Configuración del cliente WebTorrent con DHT habilitado
-        const client = new WebTorrent({
-            dht: true,   // Habilitar DHT para descentralización
-            tracker: true // Habilitar el uso de trackers
-        });
-
-        // Compartir archivo
-        function shareFile() {
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
-
-            if (file) {
-                client.seed(file, (torrent) => {
-                    const magnetURI = torrent.magnetURI;
-                    document.getElementById('status').innerHTML = 'Archivo compartido: <a href="' + magnetURI + '">' + magnetURI + '</a>';
-                    console.log('Magnet URI:', magnetURI);
-                    document.getElementById('copyButton').style.display = 'inline-block'; // Mostrar el botón
-                }).on('error', (err) => {
-                    console.error('Error al compartir archivo:', err);
-                    document.getElementById('status').innerHTML = 'Error al compartir archivo. Revisa la consola para más detalles.';
-                });
-            } else {
-                alert('Por favor, selecciona un archivo.');
-            }
-        }
-
-        // Descargar torrent
-        function downloadTorrent() {
-            const torrentId = document.getElementById('torrentId').value;
-
-            if (torrentId) {
-                client.add(torrentId, (torrent) => {
-                    torrent.files.forEach((file) => {
-                        if (file.name.endsWith('.mp4') || file.name.endsWith('.webm')) {
-                            file.renderTo('video#videoPlayer');
-                        } else {
-                            file.getBlobURL((err, url) => {
-                                if (err) {
-                                    console.error('Error al obtener URL del blob:', err);
-                                    document.getElementById('status').innerHTML = 'Error al obtener URL del blob. Revisa la consola para más detalles.';
-                                } else {
-                                    const a = document.createElement('a');
-                                    a.href = url;
-                                    a.download = file.name;
-                                    a.textContent = 'Descargar ' + file.name;
-                                    document.body.appendChild(a);
-                                    document.body.appendChild(document.createElement('br'));
-                                }
-                            });
-                        }
-                    });
-                }).on('error', (err) => {
-                    console.error('Error al descargar torrent:', err);
-                    document.getElementById('status').innerHTML = 'Error al descargar torrent. Revisa la consola para más detalles.';
-                });
-            } else {
-                alert('Por favor, introduce un enlace Magnet o un archivo .torrent.');
-            }
-        }
-
-        function copyToClipboard() {
-    const statusElement = document.getElementById('status');
-    const link = statusElement.querySelector('a');
-    if (link) {
-        navigator.clipboard.writeText(link.href).then(() => {
-            alert('Enlace copiado al portapapeles');
-        }).catch(err => {
-            console.error('Error al copiar enlace: ', err);
-        });
-    } else {
-        alert('No hay ningún enlace para copiar.');
-    }
-}
-
-function updateFileName() {
-    const fileInput = document.getElementById('fileInput');
-    const fileNameElement = document.getElementById('fileName');
-    
-    if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        fileNameElement.textContent = `Archivo seleccionado: ${file.name}`;
-    } else {
-        fileNameElement.textContent = '';
-    }
-}
-
-
-    </script>
+    <!-- Mensaje de Estado -->
+    <div id="status" class="status-message"></div>
 
     <footer>
         © 2024 AllAddIn99
     </footer>
+
+    <script>
+        // Verifica que WebTorrent esté disponible
+        if (typeof WebTorrent === 'undefined') {
+            console.error('WebTorrent no está disponible. Asegúrate de que el script se cargue correctamente.');
+        } else {
+            const client = new WebTorrent();
+
+            // Compartir archivo
+            function shareFile() {
+                const fileInput = document.getElementById('fileInput');
+                const file = fileInput.files[0];
+
+                if (file) {
+                    client.seed(file, (torrent) => {
+                        const magnetURI = torrent.magnetURI;
+                        document.getElementById('status').innerHTML = 'Archivo compartido: <a href="' + magnetURI + '">' + magnetURI + '</a>';
+                        console.log('Magnet URI:', magnetURI);
+                    });
+                } else {
+                    alert('Por favor, selecciona un archivo.');
+                }
+            }
+
+            // Descargar torrent
+            function downloadTorrent() {
+                const torrentId = document.getElementById('torrentId').value;
+
+                if (torrentId) {
+                    client.add(torrentId, (torrent) => {
+                        torrent.files.forEach((file) => {
+                            file.getBlobURL((err, url) => {
+                                if (err) {
+                                    console.error('Error al obtener Blob URL:', err);
+                                    document.getElementById('status').innerText = 'Error al obtener el archivo.';
+                                    return;
+                                }
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = file.name;
+                                a.textContent = 'Descargar ' + file.name;
+                                document.body.appendChild(a);
+                                document.body.appendChild(document.createElement('br'));
+                            });
+                        });
+                    }, (err) => {
+                        console.error('Error al agregar el torrent:', err);
+                        document.getElementById('status').innerText = 'Error al agregar el torrent.';
+                    });
+                } else {
+                    alert('Por favor, introduce un enlace Magnet o un archivo .torrent.');
+                }
+            }
+        }
+    </script>
 </body>
 </html>
