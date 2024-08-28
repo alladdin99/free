@@ -6,7 +6,7 @@
     <title>FAST LINKER</title>
     <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
-    <link rel="stylesheet" href="./Conf/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     
@@ -16,9 +16,7 @@
     <button onclick="translateTo('es')">ES</button>
     </div>
 
-     <div id="navbarI-container"></div>
-
-    <img src="./Conf/img/logo.png" alt="Logo de AllAddIn99" class="logo">
+    <img src="logo.png" alt="Logo de FAST LINKER" class="logo">
 
 
        <div class="description-container">
@@ -224,20 +222,5 @@
     <footer>
         © 2024 AllAddIn99
     </footer>
-
-
-<script>
-        // Usando fetch para cargar un archivo HTML y luego insertarlo en la página
-        fetch('./Conf/navbarI.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('header-container').innerHTML = data;
-            })
-            .catch(error => console.error('Error cargando el HTML:', error));
-    </script>
-
-
-
-
 </body>
 </html>
