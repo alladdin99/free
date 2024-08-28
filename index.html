@@ -5,34 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AllAddIn99</title>
     <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
-     <link rel="stylesheet" href="style.css">
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>📤 AllAddIn99 📥</h1>
-    
- <div class="main-container">
+
+    <div class="main-container">
         <!-- Sección de Subida -->
-       <div class="section upload">
-    <input type="file" id="fileInput" class="file-input" onchange="updateFileName()">
-    <label for="fileInput" class="file-label">Examinar</label>
-    <button onclick="shareFile()">📤 Compartir archivo</button>
-    <p id="fileName" class="file-name"></p> <!-- Elemento para mostrar el nombre del archivo -->
-</div>
-   <div class="section download">
-
-
-    <input type="text" id="torrentId" placeholder="Magnet link o archivo .torrent">
-    <button onclick="downloadTorrent()">📥 Descargar</button>
-</div>
-</div>
+        <div class="section upload">
+            <input type="file" id="fileInput" class="file-input" onchange="updateFileName()">
+            <label for="fileInput" class="file-label">Examinar</label>
+            <button onclick="shareFile()">📤 Compartir archivo</button>
+            <p id="fileName" class="file-name"></p> <!-- Elemento para mostrar el nombre del archivo -->
+        </div>
+        <div class="section download">
+            <input type="text" id="torrentId" placeholder="Magnet link o archivo .torrent">
+            <button onclick="downloadTorrent()">📥 Descargar</button>
+        </div>
+    </div>
 
     <br><br>
     <!--<video id="videoPlayer" controls></video>-->
     <div class="status-container">
-    <div id="status"></div>
-    <button class="copy-button" onclick="copyToClipboard()" >🔗 Copiar enlace</button>
+        <div id="status"></div>
+        <button class="copy-button" onclick="copyToClipboard()">🔗 Copiar enlace</button>
     </div>
+    <div id="downloadLinks"></div>
 
     <script>
         // Configuración del cliente WebTorrent con DHT habilitado
@@ -41,17 +40,43 @@
             tracker: true // Habilitar el uso de trackers
         });
 
+        // Función para encriptar un texto
+        function encrypt(text, key) {
+            return CryptoJS.AES.encrypt(text, key).toString();
+        }
+
+        // Función para desencriptar un texto
+        function decrypt(text, key) {
+            const bytes = CryptoJS.AES.decrypt(text, key);
+            return bytes.toString(CryptoJS.enc.Utf8);
+        }
+
+        // Función para acortar un enlace usando TinyURL (ejemplo simple)
+        function shortenUrl(url) {
+            return fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`)
+                .then(response => response.text());
+        }
+
         // Compartir archivo
-        function shareFile() {
+        async function shareFile() {
             const fileInput = document.getElementById('fileInput');
             const file = fileInput.files[0];
+            const encryptionKey = "P@ssw0rd!2024$SecureKey"; // Usa una clave segura en un entorno real
 
             if (file) {
-                client.seed(file, (torrent) => {
+                client.seed(file, async (torrent) => {
                     const magnetURI = torrent.magnetURI;
-                    document.getElementById('status').innerHTML = 'Archivo compartido: <a href="' + magnetURI + '">' + magnetURI + '</a>';
-                    console.log('Magnet URI:', magnetURI);
-                    document.getElementById('copyButton').style.display = 'inline-block'; // Mostrar el botón
+
+                    // Encriptar el enlace magnético
+                    const encryptedMagnetURI = encrypt(magnetURI, encryptionKey);
+
+                    // Acortar el enlace encriptado
+                    const shortenedUrl = await shortenUrl(encryptedMagnetURI);
+
+                    // Mostrar el enlace acortado
+                    document.getElementById('status').innerHTML = 'Enlace acortado: <a href="' + shortenedUrl + '">' + shortenedUrl + '</a>';
+                    console.log('Magnet URI encriptado:', encryptedMagnetURI);
+                    console.log('Enlace acortado:', shortenedUrl);
                 }).on('error', (err) => {
                     console.error('Error al compartir archivo:', err);
                     document.getElementById('status').innerHTML = 'Error al compartir archivo. Revisa la consola para más detalles.';
@@ -63,10 +88,22 @@
 
         // Descargar torrent
         function downloadTorrent() {
-            const torrentId = document.getElementById('torrentId').value;
+            let torrentId = document.getElementById('torrentId').value;
+            const decryptionKey = "P@ssw0rd!2024$SecureKey"; // Usa la misma clave que en el proceso de encriptación
 
             if (torrentId) {
+                // Desencriptar el enlace magnético
+                try {
+                    torrentId = decrypt(torrentId, decryptionKey);
+                } catch (err) {
+                    console.error('Error al desencriptar el enlace:', err);
+                    alert('El enlace es inválido o no se pudo desencriptar.');
+                    return;
+                }
+
                 client.add(torrentId, (torrent) => {
+                    document.getElementById('downloadLinks').innerHTML = ''; // Limpiar enlaces anteriores
+
                     torrent.files.forEach((file) => {
                         if (file.name.endsWith('.mp4') || file.name.endsWith('.webm')) {
                             file.renderTo('video#videoPlayer');
@@ -80,8 +117,8 @@
                                     a.href = url;
                                     a.download = file.name;
                                     a.textContent = 'Descargar ' + file.name;
-                                    document.body.appendChild(a);
-                                    document.body.appendChild(document.createElement('br'));
+                                    document.getElementById('downloadLinks').appendChild(a);
+                                    document.getElementById('downloadLinks').appendChild(document.createElement('br'));
                                 }
                             });
                         }
@@ -96,32 +133,30 @@
         }
 
         function copyToClipboard() {
-    const statusElement = document.getElementById('status');
-    const link = statusElement.querySelector('a');
-    if (link) {
-        navigator.clipboard.writeText(link.href).then(() => {
-            alert('Enlace copiado al portapapeles');
-        }).catch(err => {
-            console.error('Error al copiar enlace: ', err);
-        });
-    } else {
-        alert('No hay ningún enlace para copiar.');
-    }
-}
+            const statusElement = document.getElementById('status');
+            const link = statusElement.querySelector('a');
+            if (link) {
+                navigator.clipboard.writeText(link.href).then(() => {
+                    alert('Enlace copiado al portapapeles');
+                }).catch(err => {
+                    console.error('Error al copiar enlace: ', err);
+                });
+            } else {
+                alert('No hay ningún enlace para copiar.');
+            }
+        }
 
-function updateFileName() {
-    const fileInput = document.getElementById('fileInput');
-    const fileNameElement = document.getElementById('fileName');
-    
-    if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        fileNameElement.textContent = `Archivo seleccionado: ${file.name}`;
-    } else {
-        fileNameElement.textContent = '';
-    }
-}
+        function updateFileName() {
+            const fileInput = document.getElementById('fileInput');
+            const fileNameElement = document.getElementById('fileName');
 
-
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                fileNameElement.textContent = `Archivo seleccionado: ${file.name}`;
+            } else {
+                fileNameElement.textContent = '';
+            }
+        }
     </script>
 
     <footer>
