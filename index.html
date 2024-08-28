@@ -12,6 +12,11 @@
     
     <img src="logo.png" alt="Logo de AllAddIn99" class="logo">
 
+    <div class="translation-buttons">
+    <button onclick="translateTo('en')">EN</button>
+    <button onclick="translateTo('es')">ES</button>
+    </div>
+
        <div class="description-container">
         <p class="description">FAST LINKER es una plataforma rápida y segura para compartir archivos de un lugar a otro en cuestión de segundos.</p>
 
@@ -168,6 +173,44 @@
         } else {
             fileNameElement.textContent = '';
         }
+    }
+</script>
+
+<script>
+    // Objeto de traducción simulado
+    const translations = {
+        en: {
+            description1: "FAST LINKER is a fast and secure platform for sharing files from one place to another in seconds.",
+            description2: "Share your files hassle-free, using decentralized technology to ensure efficiency and privacy.",
+            instructions: {
+                upload: "Upload file: Select the file you want to share by clicking 'Browse' and then 'Share file'. This will generate an encrypted link that you can copy.",
+                share: "Share link: Copy the generated link and share it with the person you want to send the file to.",
+                download: "Download file: The person receiving the link just needs to paste it into the download field and click 'Download'. The system will automatically decrypt the link and start the file download.",
+            }
+        },
+        es: {
+            description1: "FAST LINKER es una plataforma rápida y segura para compartir archivos de un lugar a otro en cuestión de segundos.",
+            description2: "Comparte tus archivos sin complicaciones, utilizando tecnología descentralizada para garantizar la eficiencia y privacidad.",
+            instructions: {
+                upload: "Subir archivo: Selecciona el archivo que deseas compartir haciendo clic en 'Examinar' y luego en 'Compartir archivo'. Esto generará un enlace encriptado que podrás copiar.",
+                share: "Compartir enlace: Copia el enlace generado y compártelo con la persona que deseas enviarle el archivo.",
+                download: "Descargar archivo: La persona que recibe el enlace solo necesita pegarlo en el campo de descarga y hacer clic en 'Descargar'. El sistema desencriptará automáticamente el enlace y comenzará la descarga del archivo.",
+            }
+        }
+    };
+
+    function translateTo(language) {
+        const description1 = document.querySelector('.description-container p:nth-of-type(1)');
+        const description2 = document.querySelector('.description-container p:nth-of-type(2)');
+        const uploadInstruction = document.querySelector('.instructions-container p:nth-of-type(1)');
+        const shareInstruction = document.querySelector('.instructions-container p:nth-of-type(2)');
+        const downloadInstruction = document.querySelector('.instructions-container p:nth-of-type(3)');
+
+        description1.textContent = translations[language].description1;
+        description2.textContent = translations[language].description2;
+        uploadInstruction.innerHTML = `<strong>Subir archivo:</strong> ${translations[language].instructions.upload}`;
+        shareInstruction.innerHTML = `<strong>Compartir enlace:</strong> ${translations[language].instructions.share}`;
+        downloadInstruction.innerHTML = `<strong>Descargar archivo:</strong> ${translations[language].instructions.download}`;
     }
 </script>
 
