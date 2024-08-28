@@ -179,4 +179,46 @@ a:hover {
     margin-top: 10px;
 }
 
+/* Contenedor de la descripción */
+.description-container {
+    background-color: #3E4050; /* Color de fondo similar al de las secciones */
+    border: 2px solid #9BCFF0; /* Borde en azul claro pastel */
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto; /* Centrando el contenedor */
+    max-width: 80%; /* Ancho máximo para que no se extienda demasiado */
+    text-align: center; /* Centrando el texto */
+}
+
+/* Estilo de la descripción */
+.description {
+    font-size: 1.2em; /* Tamaño de fuente */
+    color: #F8F8F8; /* Color del texto */
+}
+
+
+/* Contenedor de instrucciones */
+.instructions-container {
+    background-color: #3E4050; /* Color de fondo similar al de las secciones */
+    border: 2px solid #9BCFF0; /* Borde en azul claro pastel */
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto; /* Centrando el contenedor */
+    max-width: 80%; /* Ancho máximo para que no se extienda demasiado */
+    text-align: left; /* Alineación del texto */
+}
+
+/* Título de instrucciones */
+.instructions-container h2 {
+    color: #FFB6C1; /* Rosa pastel */
+    margin-top: 0;
+    font-size: 1.5em; /* Tamaño del título */
+}
+
+/* Párrafos de instrucciones */
+.instructions-container p {
+    color: #F8F8F8; /* Color del texto */
+    margin: 10px 0;
+    font-size: 1em; /* Tamaño del texto */
+}
 
