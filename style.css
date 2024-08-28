@@ -100,3 +100,30 @@ footer {
     text-align: center;
     border-top: 1px solid #9BCFF0; /* Azul claro pastel */
 }
+
+
+/* Contenedor de los botones y campos de entrada */
+.buttons-container {
+    display: flex;
+    justify-content: space-between; /* Distribuye los elementos a los extremos */
+    width: 100%; /* Asegura que ocupe todo el ancho disponible */
+    padding: 20px; /* Añade un poco de espacio alrededor */
+}
+
+/* Estilo para el conjunto de botones y entradas */
+.file-share, .torrent-download {
+    display: flex;
+    align-items: center;
+}
+
+.file-share {
+    justify-content: flex-start; /* Alinea a la izquierda */
+}
+
+.torrent-download {
+    justify-content: flex-end; /* Alinea a la derecha */
+}
+
+input[type="file"], input[type="text"] {
+    margin-right: 10px; /* Añade un margen entre el input y el botón */
+}
