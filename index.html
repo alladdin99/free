@@ -28,8 +28,9 @@
 
     <br><br>
     <!--<video id="videoPlayer" controls></video>-->
-    <div class="main-container">
+    <div class="status-container">
     <div id="status"></div>
+    <button class="copy-button" onclick="copyToClipboard()">Copiar enlace</button>
     </div>
 
     <script>
@@ -91,6 +92,21 @@
                 alert('Por favor, introduce un enlace Magnet o un archivo .torrent.');
             }
         }
+
+        function copyToClipboard() {
+    const statusElement = document.getElementById('status');
+    const link = statusElement.querySelector('a');
+    if (link) {
+        navigator.clipboard.writeText(link.href).then(() => {
+            alert('Enlace copiado al portapapeles');
+        }).catch(err => {
+            console.error('Error al copiar enlace: ', err);
+        });
+    } else {
+        alert('No hay ningún enlace para copiar.');
+    }
+}
+
     </script>
 
     <footer>

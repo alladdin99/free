@@ -110,3 +110,33 @@ a:hover {
     color: #81A1C1; /* Azul más oscuro al hacer hover */
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3); /* Sombra en el texto del enlace */
 }
+
+/* Contenedor del mensaje de estado con borde */
+.status-container {
+    position: relative;
+    background-color: #3E4050;
+    border: 2px dashed #9BCFF0;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px;
+    text-align: center;
+    color: #A8DADC;
+}
+
+/* Botón de copiar en la esquina superior derecha */
+.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #9BCFF0;
+    color: #2B2D42;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.copy-button:hover {
+    background-color: #C3A1E0; /* Lavanda pastel */
+}
