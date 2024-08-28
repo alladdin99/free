@@ -10,7 +10,7 @@
 </head>
 <body>
     <h1>📤 AllAddIn99 📥</h1>
-
+    
     <div class="main-container">
         <!-- Sección de Subida -->
         <div class="section upload">
@@ -19,6 +19,8 @@
             <button onclick="shareFile()">📤 Compartir archivo</button>
             <p id="fileName" class="file-name"></p> <!-- Elemento para mostrar el nombre del archivo -->
         </div>
+        
+        <!-- Sección de Descarga -->
         <div class="section download">
             <input type="text" id="torrentId" placeholder="Magnet link o archivo .torrent">
             <button onclick="downloadTorrent()">📥 Descargar</button>
@@ -31,7 +33,6 @@
         <div id="status"></div>
         <button class="copy-button" onclick="copyToClipboard()">🔗 Copiar enlace</button>
     </div>
-    <div id="downloadLinks"></div>
 
     <script>
         // Configuración del cliente WebTorrent con DHT habilitado
@@ -39,6 +40,9 @@
             dht: true,   // Habilitar DHT para descentralización
             tracker: true // Habilitar el uso de trackers
         });
+
+        // Clave de encriptación (debe ser segura en producción)
+        const encryptionKey = 'P@ssw0rd!2024$SecureKey';
 
         // Función para encriptar un texto
         function encrypt(text, key) {
@@ -51,32 +55,22 @@
             return bytes.toString(CryptoJS.enc.Utf8);
         }
 
-        // Función para acortar un enlace usando TinyURL (ejemplo simple)
-        function shortenUrl(url) {
-            return fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`)
-                .then(response => response.text());
-        }
-
         // Compartir archivo
-        async function shareFile() {
+        function shareFile() {
             const fileInput = document.getElementById('fileInput');
             const file = fileInput.files[0];
-            const encryptionKey = "P@ssw0rd!2024$SecureKey"; // Usa una clave segura en un entorno real
 
             if (file) {
-                client.seed(file, async (torrent) => {
+                client.seed(file, (torrent) => {
                     const magnetURI = torrent.magnetURI;
 
                     // Encriptar el enlace magnético
                     const encryptedMagnetURI = encrypt(magnetURI, encryptionKey);
 
-                    // Acortar el enlace encriptado
-                    const shortenedUrl = await shortenUrl(encryptedMagnetURI);
-
-                    // Mostrar el enlace acortado
-                    document.getElementById('status').innerHTML = 'Enlace acortado: <a href="' + shortenedUrl + '">' + shortenedUrl + '</a>';
+                    // Mostrar el enlace acortado (en realidad, solo se muestra el enlace encriptado)
+                    document.getElementById('status').innerHTML = 'Archivo compartido: <a href="#" onclick="return false;">' + encryptedMagnetURI + '</a>';
                     console.log('Magnet URI encriptado:', encryptedMagnetURI);
-                    console.log('Enlace acortado:', shortenedUrl);
+                    document.getElementById('copyButton').style.display = 'inline-block'; // Mostrar el botón
                 }).on('error', (err) => {
                     console.error('Error al compartir archivo:', err);
                     document.getElementById('status').innerHTML = 'Error al compartir archivo. Revisa la consola para más detalles.';
@@ -88,45 +82,41 @@
 
         // Descargar torrent
         function downloadTorrent() {
-            let torrentId = document.getElementById('torrentId').value;
-            const decryptionKey = "P@ssw0rd!2024$SecureKey"; // Usa la misma clave que en el proceso de encriptación
+            const torrentId = document.getElementById('torrentId').value;
 
             if (torrentId) {
-                // Desencriptar el enlace magnético
                 try {
-                    torrentId = decrypt(torrentId, decryptionKey);
+                    // Desencriptar el enlace magnético
+                    const decryptedMagnetURI = decrypt(torrentId, encryptionKey);
+
+                    client.add(decryptedMagnetURI, (torrent) => {
+                        torrent.files.forEach((file) => {
+                            if (file.name.endsWith('.mp4') || file.name.endsWith('.webm')) {
+                                file.renderTo('video#videoPlayer');
+                            } else {
+                                file.getBlobURL((err, url) => {
+                                    if (err) {
+                                        console.error('Error al obtener URL del blob:', err);
+                                        document.getElementById('status').innerHTML = 'Error al obtener URL del blob. Revisa la consola para más detalles.';
+                                    } else {
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = file.name;
+                                        a.textContent = 'Descargar ' + file.name;
+                                        document.body.appendChild(a);
+                                        document.body.appendChild(document.createElement('br'));
+                                    }
+                                });
+                            }
+                        });
+                    }).on('error', (err) => {
+                        console.error('Error al descargar torrent:', err);
+                        document.getElementById('status').innerHTML = 'Error al descargar torrent. Revisa la consola para más detalles.';
+                    });
                 } catch (err) {
                     console.error('Error al desencriptar el enlace:', err);
                     alert('El enlace es inválido o no se pudo desencriptar.');
-                    return;
                 }
-
-                client.add(torrentId, (torrent) => {
-                    document.getElementById('downloadLinks').innerHTML = ''; // Limpiar enlaces anteriores
-
-                    torrent.files.forEach((file) => {
-                        if (file.name.endsWith('.mp4') || file.name.endsWith('.webm')) {
-                            file.renderTo('video#videoPlayer');
-                        } else {
-                            file.getBlobURL((err, url) => {
-                                if (err) {
-                                    console.error('Error al obtener URL del blob:', err);
-                                    document.getElementById('status').innerHTML = 'Error al obtener URL del blob. Revisa la consola para más detalles.';
-                                } else {
-                                    const a = document.createElement('a');
-                                    a.href = url;
-                                    a.download = file.name;
-                                    a.textContent = 'Descargar ' + file.name;
-                                    document.getElementById('downloadLinks').appendChild(a);
-                                    document.getElementById('downloadLinks').appendChild(document.createElement('br'));
-                                }
-                            });
-                        }
-                    });
-                }).on('error', (err) => {
-                    console.error('Error al descargar torrent:', err);
-                    document.getElementById('status').innerHTML = 'Error al descargar torrent. Revisa la consola para más detalles.';
-                });
             } else {
                 alert('Por favor, introduce un enlace Magnet o un archivo .torrent.');
             }
@@ -136,7 +126,7 @@
             const statusElement = document.getElementById('status');
             const link = statusElement.querySelector('a');
             if (link) {
-                navigator.clipboard.writeText(link.href).then(() => {
+                navigator.clipboard.writeText(link.textContent).then(() => {
                     alert('Enlace copiado al portapapeles');
                 }).catch(err => {
                     console.error('Error al copiar enlace: ', err);
@@ -149,7 +139,7 @@
         function updateFileName() {
             const fileInput = document.getElementById('fileInput');
             const fileNameElement = document.getElementById('fileName');
-
+            
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
                 fileNameElement.textContent = `Archivo seleccionado: ${file.name}`;
